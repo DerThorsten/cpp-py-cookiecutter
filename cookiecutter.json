@@ -10,5 +10,6 @@
     "cmake_project_name":           "{{ cookiecutter.package_name }}",
     "cmake_interface_library_name": "{{ cookiecutter.package_name }}",
     "github_project_name":          "{{ cookiecutter.project_slug }}",
-    "year":                         "2018"
+    "year":                         "2018",
+    "description":                  "{{ cookiecutter.package_name }} is C++ library"
 }

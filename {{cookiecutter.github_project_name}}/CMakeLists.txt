@@ -72,6 +72,63 @@ if(BUILD_TESTS)
 endif()
 
 
+
+
+
+
+# Installation
+# ============
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+install(TARGETS ${PROJECT_NAME}
+        EXPORT ${PROJECT_NAME}-targets)
+
+# Makes the project importable from the build directory
+export(EXPORT ${PROJECT_NAME}-targets
+       FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
+
+install(FILES ${${PROJECT_NAME}_HEADERS}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${CPP_ROOT_FOLDER_NAME})
+
+
+set(${PROJECT_NAME}_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE
+    STRING "install path for ${PROJECT_NAME}Config.cmake")
+
+configure_package_config_file(${PROJECT_NAME}Config.cmake.in
+                              "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+                              INSTALL_DESTINATION ${${PROJECT_NAME}_CMAKECONFIG_INSTALL_DIR})
+
+
+# ${PROJECT_NAME} is header-only and does not depend on the architecture.
+# Remove CMAKE_SIZEOF_VOID_P from ${PROJECT_NAME}ConfigVersion.cmake so that an ${PROJECT_NAME}Config.cmake
+# generated for a 64 bit target can be used for 32 bit targets and vice versa.
+set(_${PROJECT_NAME}_CMAKE_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
+unset(CMAKE_SIZEOF_VOID_P)
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+                                 VERSION ${${PROJECT_NAME}_VERSION}
+                                 COMPATIBILITY AnyNewerVersion)
+set(CMAKE_SIZEOF_VOID_P ${_${PROJECT_NAME}_CMAKE_SIZEOF_VOID_P})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+              ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        DESTINATION ${${PROJECT_NAME}_CMAKECONFIG_INSTALL_DIR})
+install(EXPORT ${PROJECT_NAME}-targets
+        FILE ${PROJECT_NAME}Targets.cmake
+        DESTINATION ${${PROJECT_NAME}_CMAKECONFIG_INSTALL_DIR})
+
+configure_file(${PROJECT_NAME}.pc.in
+               "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+                @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/")
+
+
+
+
+
+
+
 # OPTION(BUILD_BENCHMARK "xtensor benchmark" OFF)
 # OPTION(DOWNLOAD_DOCTEST "build gtest from downloaded sources" OFF)
 # OPTION(DOWNLOAD_GBENCHMARK "download google benchmark and build from source" ON)
@@ -117,47 +174,3 @@ endif()
 #     add_subdirectory(benchmark)
 # endif()
 
-# # Installation
-# # ============
-
-# include(GNUInstallDirs)
-# include(CMakePackageConfigHelpers)
-
-# install(TARGETS xtensor
-#         EXPORT ${PROJECT_NAME}-targets)
-
-# # Makes the project importable from the build directory
-# export(EXPORT ${PROJECT_NAME}-targets
-#        FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
-
-# install(FILES ${XTENSOR_HEADERS}
-#         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xtensor)
-
-# set(XTENSOR_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE
-#     STRING "install path for xtensorConfig.cmake")
-
-# configure_package_config_file(${PROJECT_NAME}Config.cmake.in
-#                               "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-#                               INSTALL_DESTINATION ${XTENSOR_CMAKECONFIG_INSTALL_DIR})
-
-# # xtensor is header-only and does not depend on the architecture.
-# # Remove CMAKE_SIZEOF_VOID_P from xtensorConfigVersion.cmake so that an xtensorConfig.cmake
-# # generated for a 64 bit target can be used for 32 bit targets and vice versa.
-# set(_XTENSOR_CMAKE_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
-# unset(CMAKE_SIZEOF_VOID_P)
-# write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-#                                  VERSION ${${PROJECT_NAME}_VERSION}
-#                                  COMPATIBILITY AnyNewerVersion)
-# set(CMAKE_SIZEOF_VOID_P ${_XTENSOR_CMAKE_SIZEOF_VOID_P})
-# install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-#               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-#         DESTINATION ${XTENSOR_CMAKECONFIG_INSTALL_DIR})
-# install(EXPORT ${PROJECT_NAME}-targets
-#         FILE ${PROJECT_NAME}Targets.cmake
-#         DESTINATION ${XTENSOR_CMAKECONFIG_INSTALL_DIR})
-
-# configure_file(${PROJECT_NAME}.pc.in
-#                "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
-#                 @ONLY)
-# install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
-# DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/")
