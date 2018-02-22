@@ -1,12 +1,6 @@
-############################################################################
-# Copyright (c) 2016, Johan Mabille, Sylvain Corlay and Wolf Vollprecht    #
-#                                                                          #
-# Distributed under the terms of the BSD 3-Clause License.                 #
-#                                                                          #
-# The full license is in the file LICENSE, distributed with this software. #
-############################################################################
 
 cmake_minimum_required(VERSION 3.1)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 project ({{cookiecutter.cmake_project_name}})
 
 
@@ -73,8 +67,27 @@ endif()
 
 
 
+# Benchmark
+# ============
+OPTION(BUILD_BENCHMARK "${PROJECT_NAME} test suite" ON)
+OPTION(DOWNLOAD_GOOGLE_BENCHMARK "build google benchmark from downloaded sources" ON)
+
+if(DOWNLOAD_GOOGLE_BENCHMARK OR GOOGLE_BENCHMARK_SRC_DIR)
+    set(BUILD_BENCHMARK ON)
+endif()
+
+if(BUILD_BENCHMARK)
+    add_subdirectory(benchmark)
+endif()
 
 
+
+# Python interface
+# ============
+OPTION(BUILD_PYTHON_INTERFACE "${PROJECT_NAME} python interface" ON)
+if(BUILD_PYTHON_INTERFACE)
+    add_subdirectory(python)
+endif()
 
 # Installation
 # ============

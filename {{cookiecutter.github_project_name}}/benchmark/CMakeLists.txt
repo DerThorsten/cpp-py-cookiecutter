@@ -1,0 +1,43 @@
+if(DOWNLOAD_GOOGLE_BENCHMARK OR GOOGLE_BENCHMARK_SRC_DIR)
+
+
+
+    configure_file(downloadGBenchmark.cmake.in googlebenchmark-download/CMakeLists.txt)
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+                    RESULT_VARIABLE result
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googlebenchmark-download )
+    execute_process(COMMAND ${CMAKE_COMMAND} --build .
+                    RESULT_VARIABLE result
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googlebenchmark-download )
+
+    # Add googlebenchmark directly to our build. This defines
+    # the gtest and gtest_main targets.
+    add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googlebenchmark-src
+                     ${CMAKE_CURRENT_BINARY_DIR}/googlebenchmark-build)
+
+
+    set(GBENCHMARK_INCLUDE_DIRS "${googlebenchmark_SOURCE_DIR}/include")
+    set(GBENCHMARK_LIBRARIES benchmark)
+
+
+else()
+    find_package(GOOGLE_BENCHMARK REQUIRED)
+endif()
+
+include_directories(${PROJECT_INCLUDE_DIR})
+include_directories(${GBENCHMARK_INCLUDE_DIRS})
+
+
+file(GLOB_RECURSE ${PROJECT_NAME}_BENCHMARKS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
+list(REMOVE_ITEM ${PROJECT_NAME}_BENCHMARKS main.cpp)
+set(${PROJECT_NAME}_BENCHMARK_TARGET benchmark_${PROJECT_NAME})
+
+
+add_executable( ${${PROJECT_NAME}_BENCHMARK_TARGET}
+    main.cpp
+    ${${PROJECT_NAME}_BENCHMARKS}
+)
+
+target_link_libraries( ${${PROJECT_NAME}_BENCHMARK_TARGET}
+                      ${GBENCHMARK_LIBRARIES}
+)
