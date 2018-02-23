@@ -1,33 +1,51 @@
-
+# dependencies
 find_package(xtensor REQUIRED)
 find_package(xtensor-python REQUIRED)
 find_package(pybind11 REQUIRED)
 find_package(NUMPY REQUIRED)
 
 
-file(GLOB_RECURSE ${PROJECT_NAME}_PYTHON_SRC_FILES 
-     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
-list(REMOVE_ITEM ${PROJECT_NAME}_PYTHON_SRC_FILES  main.cpp)
-
-
+# name of the target 
 set(${PROJECT_NAME}_PYTHON_INTERFACE_TARGET python_interface_${PROJECT_NAME})
 
+# all header for the python module
+file(GLOB_RECURSE ${PROJECT_NAME}_PYTHON_SRC_FILES 
+     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
+list(REMOVE_ITEM ${PROJECT_NAME}_PYTHON_SRC_FILES  src/main.cpp)
 
-pybind11_add_module( ${${PROJECT_NAME}_PYTHON_INTERFACE_TARGET} main.cpp
+# add the python module via pybind11 cmake-function
+pybind11_add_module( ${${PROJECT_NAME}_PYTHON_INTERFACE_TARGET} 
+    src/main.cpp
     ${${PROJECT_NAME}_PYTHON_SRC_FILES})
 
+# set the OUTPUT_NAME to match the python module name
+set_target_properties(${${PROJECT_NAME}_PYTHON_INTERFACE_TARGET} 
+    PROPERTIES OUTPUT_NAME _{{cookiecutter.py_package_name}} )
 
-set_target_properties(${${PROJECT_NAME}_PYTHON_INTERFACE_TARGET} PROPERTIES OUTPUT_NAME {{cookiecutter.py_package_name}} )
-
-
+# include dependencies directories
 target_include_directories(  ${${PROJECT_NAME}_PYTHON_INTERFACE_TARGET} PRIVATE 
     "$<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR};${xtensor_INCLUDE_DIRS};${xtensor-python_INCLUDE_DIR};${pybind11_INCLUDE_DIRS};${PYTHON_NUMPY_INCLUDE_DIR}>"
 )
 
 
+# move the target to a folder with the proper name
+# create folder with the proper name
+SET(PY_MOD_FOLDER_NAME {{cookiecutter.py_package_name}})
+file(MAKE_DIRECTORY ${PY_MOD_FOLDER_NAME})
+
+add_custom_command(TARGET ${${PROJECT_NAME}_PYTHON_INTERFACE_TARGET} POST_BUILD 
+  COMMAND "${CMAKE_COMMAND}" -E copy 
+     "$<TARGET_FILE:${${PROJECT_NAME}_PYTHON_INTERFACE_TARGET}>"
+     "${PY_MOD_FOLDER_NAME}/$<CONFIGURATION>/$<TARGET_FILE_NAME:${${PROJECT_NAME}_PYTHON_INTERFACE_TARGET}>" 
+  COMMENT "move python extension")
 
 
+# move the init file 
+add_custom_command(TARGET ${${PROJECT_NAME}_PYTHON_INTERFACE_TARGET} POST_BUILD 
+    COMMAND ${CMAKE_COMMAND} -E copy 
+    ${CMAKE_CURRENT_SOURCE_DIR}/py/__init__.py ${PY_MOD_FOLDER_NAME}/
+)
 #################################
 # INSTALL THE PYTHON MODULE
 #################################
@@ -58,4 +76,4 @@ SET(PYTHON_MODULE_INSTALL_DIR ${PYTHON_MODULE_INSTALL_DIR}
 # use this in INSTALL() commands to get packaging right
 FILE(RELATIVE_PATH PYTHON_MODULE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX} ${PYTHON_MODULE_INSTALL_DIR})
 
-install(TARGETS  ${${PROJECT_NAME}_PYTHON_INTERFACE_TARGET} DESTINATION ${PYTHON_MODULE_INSTALL_DIR})
+install(TARGETS  ${${PROJECT_NAME}_PYTHON_INTERFACE_TARGET} DESTINATION ${PYTHON_MODULE_INSTALL_DIR}/${PY_MOD_FOLDER_NAME})

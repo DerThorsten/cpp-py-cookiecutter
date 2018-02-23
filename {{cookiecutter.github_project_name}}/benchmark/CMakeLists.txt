@@ -25,7 +25,8 @@ else()
 endif()
 
 
-file(GLOB_RECURSE ${PROJECT_NAME}_BENCHMARKS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
+file(GLOB_RECURSE ${PROJECT_NAME}_BENCHMARKS 
+     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 list(REMOVE_ITEM ${PROJECT_NAME}_BENCHMARKS main.cpp)
 set(${PROJECT_NAME}_BENCHMARK_TARGET benchmark_${PROJECT_NAME})
 
@@ -35,14 +36,13 @@ add_executable( ${${PROJECT_NAME}_BENCHMARK_TARGET}
     ${${PROJECT_NAME}_BENCHMARKS}
 )
 
-target_link_libraries( ${${PROJECT_NAME}_BENCHMARK_TARGET}
-                      ${GBENCHMARK_LIBRARIES}
+# include dependencies directories
+target_include_directories(  ${${PROJECT_NAME}_BENCHMARK_TARGET} PRIVATE 
+    "$<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR};${GBENCHMARK_INCLUDE_DIRS}>"
 )
 
 
 
-
-target_include_directories(  ${${PROJECT_NAME}_BENCHMARK_TARGET} PRIVATE
-    ${PROJECT_INCLUDE_DIR} 
-    ${GBENCHMARK_INCLUDE_DIRS}
+target_link_libraries( ${${PROJECT_NAME}_BENCHMARK_TARGET}
+                      ${GBENCHMARK_LIBRARIES}
 )
