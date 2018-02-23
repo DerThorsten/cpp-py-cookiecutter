@@ -28,10 +28,6 @@ endif()
 
 find_package(Threads)
 
-include_directories(${PROJECT_INCLUDE_DIR})
-include_directories(${DOCTEST_INCLUDE_DIRS})
-
-
 
 file(GLOB_RECURSE ${PROJECT_NAME}_TESTS  
      RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
@@ -48,3 +44,7 @@ add_executable( ${${PROJECT_NAME}_TEST_TARGET}
     ${${PROJECT_NAME}_TESTS}
 )
 
+
+target_include_directories(  ${${PROJECT_NAME}_TEST_TARGET} PRIVATE 
+    "$<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR};${DOCTEST_INCLUDE_DIRS}>"
+)

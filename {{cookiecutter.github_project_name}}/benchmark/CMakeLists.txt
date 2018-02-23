@@ -24,9 +24,6 @@ else()
     find_package(GOOGLE_BENCHMARK REQUIRED)
 endif()
 
-include_directories(${PROJECT_INCLUDE_DIR})
-include_directories(${GBENCHMARK_INCLUDE_DIRS})
-
 
 file(GLOB_RECURSE ${PROJECT_NAME}_BENCHMARKS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 list(REMOVE_ITEM ${PROJECT_NAME}_BENCHMARKS main.cpp)
@@ -40,4 +37,12 @@ add_executable( ${${PROJECT_NAME}_BENCHMARK_TARGET}
 
 target_link_libraries( ${${PROJECT_NAME}_BENCHMARK_TARGET}
                       ${GBENCHMARK_LIBRARIES}
+)
+
+
+
+
+target_include_directories(  ${${PROJECT_NAME}_BENCHMARK_TARGET} PRIVATE
+    ${PROJECT_INCLUDE_DIR} 
+    ${GBENCHMARK_INCLUDE_DIRS}
 )
