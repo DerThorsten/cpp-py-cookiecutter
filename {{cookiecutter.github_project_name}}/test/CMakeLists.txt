@@ -1,4 +1,4 @@
-if(DOWNLOAD_DOCTEST OR DOCTEST_SRC_DIR)
+if(DOWNLOAD_DOCTEST)
 
     if(DOWNLOAD_DOCTEST)
         # Download and unpack doctest at configure time
@@ -26,7 +26,6 @@ else()
     find_package(DOCTEST REQUIRED)
 endif()
 
-find_package(Threads)
 
 
 file(GLOB_RECURSE ${PROJECT_NAME}_TESTS  

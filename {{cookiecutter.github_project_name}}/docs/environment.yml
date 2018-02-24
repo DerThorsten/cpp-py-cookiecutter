@@ -1,7 +1,11 @@
 name: {{cookiecutter.package_name}}-docs
 
 channels:
+  - cmake 
   - conda-forge
 
 dependencies:
+  - cmake
+  - xtensor
+  - xtensor-python
   - breathe

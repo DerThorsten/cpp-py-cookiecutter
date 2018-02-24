@@ -57,7 +57,7 @@ target_include_directories(${INTERFACE_LIB_NAME}
 OPTION(BUILD_TESTS "${PROJECT_NAME} test suite" ON)
 OPTION(DOWNLOAD_DOCTEST "build doctest from downloaded sources" ON)
 
-if(DOWNLOAD_DOCTEST OR DOCTEST_SRC_DIR)
+if(DOWNLOAD_DOCTEST)
     set(BUILD_TESTS ON)
 endif()
 
@@ -72,12 +72,22 @@ endif()
 OPTION(BUILD_BENCHMARK "${PROJECT_NAME} test suite" ON)
 OPTION(DOWNLOAD_GOOGLE_BENCHMARK "build google benchmark from downloaded sources" ON)
 
-if(DOWNLOAD_GOOGLE_BENCHMARK OR GOOGLE_BENCHMARK_SRC_DIR)
+if(DOWNLOAD_GOOGLE_BENCHMARK)
     set(BUILD_BENCHMARK ON)
 endif()
 
 if(BUILD_BENCHMARK)
     add_subdirectory(benchmark)
+endif()
+
+
+# Examples
+# ============
+OPTION(BUILD_EXAMPLES "${PROJECT_NAME} test suite" ON)
+
+
+if(BUILD_EXAMPLES)
+    add_subdirectory(examples)
 endif()
 
 

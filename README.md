@@ -1,4 +1,4 @@
-# xt-boilerplate
+# cpp-py-cookiecutter
 a cookiecutter for C++14 projects with integrated python bindings.
 
 

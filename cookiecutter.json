@@ -1,7 +1,7 @@
 {
     "full_name":                    "John Doe",
     "email":                        "john@doe.de",
-    "project_name":                 "my cpp project",
+    "project_name":                 "cpptools",
     "project_slug":                 "{{ cookiecutter.project_name|lower|replace(' ', '-') }}",
     "package_name":                 "{{ cookiecutter.project_slug|replace('-', '_') }}",
     "cpp_namespace":                "{{ cookiecutter.package_name }}",
@@ -13,5 +13,11 @@
     "github_user_name":             "JohnDoe",
     "year":                         "2018",
     "description":                  "{{ cookiecutter.package_name }} is C++ library",
-    "py_package_name":              "{{ cookiecutter.package_name|replace('-', '_') }}"
+    "py_package_name":              "{{ cookiecutter.package_name|replace('-', '_') }}",
+    "_copy_without_render": [
+        "docs/source/_templates/*.html",
+        "docs/source/_templates/*.css",
+        "docs/source/_templates/*.rst",
+        "docs/source/_static/css/*.css"
+    ]
 }
